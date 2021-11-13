@@ -28,19 +28,28 @@ addBookToLibrary(harryPotter);
 addBookToLibrary(test1);
 addBookToLibrary(test2);
 
-function displayLibrary(array) {
+function displayLibrary(array = myLibrary) {
     let bookList = document.querySelector('#books');
     removeChildren(bookList);
     array.forEach(element => {
         let newBook = makeCardElement(element);
         bookList.appendChild(newBook);
     });
+    bookList.appendChild(createNewBookDiv());
 }
 
 function removeChildren(parent) {
     while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
+        parent.lastChild.remove();
     }
+}
+
+function createNewBookDiv() {
+    let newBookDiv = makeDomElement('div', '', 'newBook card');
+    let newBookBtn = makeDomElement('button', '+', 'addNewBook');
+    newBookBtn.onclick = openForm;
+    newBookDiv.appendChild(newBookBtn);
+    return newBookDiv;
 }
 
 function makeBookInfo(e) {
@@ -79,7 +88,11 @@ function makeDomElement(tag, text = '', classID = '') {
         elemTag.appendChild(elemText)
     }
     if (classID !== '') {
-        elemTag.classList.add(classID);
+        let ClassArray = Array.from(classID.split(' '));
+        for (let classID of ClassArray) {
+            elemTag.classList.add(classID);
+        }
+        // elemTag.classList.add(classID);
     }
     return elemTag;
 }
@@ -143,11 +156,12 @@ function submitNewBook(e) {
     displayLibrary(myLibrary);
 }
 
-//changing the status of read
 //using event Delegation to dynamically add event listeners to new books
 let bookShelf = document.querySelector('#books');
-bookShelf.addEventListener('click', changeReadStatus)
+bookShelf.addEventListener('click', changeReadStatus);
+bookShelf.addEventListener('click', removeBook);
 
+//changing the status of read
 function changeReadStatus(e) {
     if (eventDelegation(e, 'BUTTON', 'bookRead')) {
         let parentCard = e.target.parentNode.parentNode.parentNode;
@@ -175,5 +189,24 @@ function eventDelegation(event, nodeType, className) {
         if (event.target.classList.contains(className)) {
             return true;
         }
+    }
+}
+
+function removeBook(e) {
+    //run event if button with class removeBook is clicked
+    if (eventDelegation(e, 'BUTTON', 'removeBook')) {
+        let parentCard = e.target.parentNode.parentNode;
+        let bookIndex = findBookIndex(parentCard);
+        let confirmDelete = confirm(`Do you want to delete ${parentCard.querySelector('.bookTitle').textContent}?`)
+        if (confirmDelete) {
+            removeByIndex(bookIndex);
+            displayLibrary();
+        }
+    }
+}
+
+function removeByIndex(index) {
+    if (index > -1) {
+        myLibrary.splice(index, 1);
     }
 }
