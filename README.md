@@ -1,0 +1,2 @@
+Using a basic HTML skeleton, and preset CSS styles, the user can add and remove books to this library by either clicking on the Add Book floating button, or on the trailing book icon. 
+This project is to expand my ability to dynamically create HTML components, use Event Delegation to add eventListeners to the new components without specitying it every time, and to use JS Constructors to create my own Object.
