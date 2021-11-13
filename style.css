@@ -25,6 +25,14 @@ body {
     padding: 20px;
 }
 
+#books {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
 .card {
     display: flex;
     flex-direction: column;
@@ -106,14 +114,6 @@ body {
 h1, h2, p {
     margin: 0;
     padding: 0;
-}
-
-#books {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
 }
 
 .addBook {

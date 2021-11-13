@@ -31,8 +31,9 @@ addBookToLibrary(test2);
 function displayLibrary(array = myLibrary) {
     let bookList = document.querySelector('#books');
     removeChildren(bookList);
-    array.forEach(element => {
+    array.forEach((element, index) => {
         let newBook = makeCardElement(element);
+        newBook.dataset.id = index;
         bookList.appendChild(newBook);
     });
     bookList.appendChild(createNewBookDiv());
@@ -165,7 +166,11 @@ bookShelf.addEventListener('click', removeBook);
 function changeReadStatus(e) {
     if (eventDelegation(e, 'BUTTON', 'bookRead')) {
         let parentCard = e.target.parentNode.parentNode.parentNode;
-        let bookIndex = findBookIndex(parentCard);
+        let bookIndex = getBookIndex(parentCard);
+        if (!validateBookIndex(parentCard)) {
+            //if the dataset id doesn't match the title and author do nothing
+            return;
+        }
         let book = myLibrary[bookIndex]
         let currentStatus = book.read;
         book.read = !currentStatus //changes read from true to false and visaversa
@@ -175,12 +180,17 @@ function changeReadStatus(e) {
 
 //finding the associated myLibrary book based on element selected's title
 //TODO make Book ID feature and connect with that
-function findBookIndex(parentCard) {
+function getBookIndex(parentCard) {
     let bookTitle = parentCard.querySelector('.bookTitle').textContent;
     let bookAuthor = parentCard.querySelector('.bookAuthor').textContent;
     let bookIndex = myLibrary.map(b => b['title']+b['author']).indexOf(bookTitle+bookAuthor);
-    console.log(bookIndex);
     return bookIndex;
+}
+
+function validateBookIndex(parent) {
+    let bookIndex = getBookIndex(parent);
+    let dataIndex = parent.dataset.id;
+    return (parseInt(dataIndex) === bookIndex);
 }
 
 function eventDelegation(event, nodeType, className) {
