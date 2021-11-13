@@ -21,12 +21,16 @@ function addBookToLibrary(book) {
 //Default Testing Books
 const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 235);
 const harryPotter = new Book('Harry Potter', 'JK Rollings', 367);
+const test1 = new Book('test', 'test2', 235);
+const test2 = new Book('test', 'test1', 235);
 addBookToLibrary(theHobbit);
 addBookToLibrary(harryPotter);
+addBookToLibrary(test1);
+addBookToLibrary(test2);
 
 function displayLibrary(array) {
     let bookList = document.querySelector('#books');
-    //removeChildren(bookList);
+    removeChildren(bookList);
     array.forEach(element => {
         let newBook = makeCardElement(element);
         bookList.appendChild(newBook);
@@ -43,7 +47,7 @@ function makeBookInfo(e) {
     let x = document.createElement('div');
     let bottomDiv = makeDomElement('div', '', 'cardBottom')
     let bookInfo = makeDomElement('div', '', 'bookInfo')
-    let read = makeDomElement('p', (e.read ? 'Read': 'Unread'), 'bookRead');
+    let read = makeDomElement('button', (e.read ? 'Read': 'Unread'), 'bookRead');
     let author = makeDomElement('p', e.author, 'bookAuthor');
     let pageLength = makeDomElement('p', e.pages, 'bookPages');
     let bookImage = makeBookImageElement(e);
@@ -140,10 +144,36 @@ function submitNewBook(e) {
 }
 
 //changing the status of read
-let readBtns = document.querySelectorAll('.bookRead');
-readBtns.addEventListener('click', changeReadStatus);
+//using event Delegation to dynamically add event listeners to new books
+let bookShelf = document.querySelector('#books');
+bookShelf.addEventListener('click', changeReadStatus)
 
 function changeReadStatus(e) {
-    let parent = e.target.parent;
-    console.log(parent)
+    if (eventDelegation(e, 'BUTTON', 'bookRead')) {
+        let parentCard = e.target.parentNode.parentNode.parentNode;
+        let bookIndex = findBookIndex(parentCard);
+        let book = myLibrary[bookIndex]
+        let currentStatus = book.read;
+        book.read = !currentStatus //changes read from true to false and visaversa
+        e.target.textContent = (currentStatus ? 'Unread' : 'Read');
+    }
+}
+
+//finding the associated myLibrary book based on element selected's title
+//TODO make Book ID feature and connect with that
+function findBookIndex(parentCard) {
+    let bookTitle = parentCard.querySelector('.bookTitle').textContent;
+    let bookAuthor = parentCard.querySelector('.bookAuthor').textContent;
+    let bookIndex = myLibrary.map(b => b['title']+b['author']).indexOf(bookTitle+bookAuthor);
+    console.log(bookIndex);
+    return bookIndex;
+}
+
+function eventDelegation(event, nodeType, className) {
+    //attaching eventListeners to the main books div, checks if target is what we want
+    if (event.target && event.target.nodeName === nodeType) {
+        if (event.target.classList.contains(className)) {
+            return true;
+        }
+    }
 }

@@ -35,6 +35,7 @@ body {
     background-color: aqua;
     width: 200px;
     border: 1px solid black;
+    padding-bottom: 12px;
 }
 
 .bookHeader {
@@ -55,7 +56,7 @@ body {
 .cardBottom {
     display: flex;
     align-items: flex-start;
-    justify-content: space-around;
+    justify-content: space-between;
     width: 100%;
     flex-grow: 1;
     padding-left: 12px;
@@ -72,6 +73,17 @@ body {
 .bookImage {
     height: auto;
     width: 50%;
+}
+
+.bookRead {
+    border: none;
+    background-color: inherit;
+    padding: 0;
+    text-align: left;
+    font-size: inherit;
+    font-family: inherit;
+    width: fit-content;
+    cursor: pointer;
 }
 
 h1, h2, p {
