@@ -187,6 +187,7 @@ function getBookIndex(parentCard) {
     return bookIndex;
 }
 
+//TODO change to check if title on card matches info on file
 function validateBookIndex(parent) {
     let bookIndex = getBookIndex(parent);
     let dataIndex = parent.dataset.id;
@@ -206,7 +207,11 @@ function removeBook(e) {
     //run event if button with class removeBook is clicked
     if (eventDelegation(e, 'BUTTON', 'removeBook')) {
         let parentCard = e.target.parentNode.parentNode;
-        let bookIndex = findBookIndex(parentCard);
+        let bookIndex = getBookIndex(parentCard);
+        if (!validateBookIndex(parentCard)) {
+            alert('ERROR! Book ID does not match Book Info')
+            return;
+        }
         let confirmDelete = confirm(`Do you want to delete ${parentCard.querySelector('.bookTitle').textContent}?`)
         if (confirmDelete) {
             removeByIndex(bookIndex);
