@@ -30,10 +30,10 @@
                 </div>
             </div>
             <div class="newBook card">
-                <button class='addNewBook' onclick="openForm()">+</button>
+                <button class='addNewBook'>+</button>
             </div>
         </div>
-        <button class='addBook' onclick="openForm()">+ Add Book</button>
+        <button class='addBook'>+ Add Book</button>
     </div>
     <div class="form-popup">
         <form class='form-container' id='addBookForm'>
@@ -44,8 +44,8 @@
             <input type='text' placeholder="Author" name='author' required>
             <label for='pages'>Page Count</label>
             <input type='number' placeholder="0" name='pages' required>
-            <button type='submit' class='btn' id='saveBookForm' onsubmit="saveNewBOOK()">Save</button>
-            <button type='button' class='btn cancel' onclick='closeForm()'>Close</button>
+            <button type='submit' class='btn' id='saveBookForm'>Save</button>
+            <button type='button' class='btn cancel' id='closePopup'>Close</button>
         </form>
     </div>
 </body>

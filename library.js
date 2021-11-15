@@ -1,4 +1,132 @@
 'use strict';
+let bookTemplate = (function() {
+    function addChildrenToDiv(parent) {
+        let args = Array.from(arguments);
+        args.shift();
+        args.forEach(x => parent.appendChild(x));
+    }
+    
+    function makeBookHeader(e) {
+        let cardDiv = makeDomElement('div', '','bookHeader')
+        let title = makeDomElement('h2', e.title, 'bookTitle');
+        let cancelBtn = makeDomElement('button', 'x', 'removeBook');
+        cardDiv.appendChild(title);
+        cardDiv.appendChild(cancelBtn); 
+        return cardDiv;
+    }
+    
+    function makeDomElement(tag, text = '', classID = '') {
+        let elemTag = document.createElement(tag);
+        if (text !== '') {
+            let elemText = document.createTextNode(text);
+            elemTag.appendChild(elemText)
+        }
+        if (classID !== '') {
+            let ClassArray = Array.from(classID.split(' '));
+            for (let classID of ClassArray) {
+                elemTag.classList.add(classID);
+            }
+            // elemTag.classList.add(classID);
+        }
+        return elemTag;
+    }
+    
+    function makeCardElement(e) {
+        let card = makeDomElement('div', '', 'card');
+        let bookInfo = makeBookInfo(e);
+        let bookHeader = makeBookHeader(e);
+        card.appendChild(bookHeader);
+        card.appendChild(bookInfo);
+        return card;
+    }
+    
+    function makeBookImageElement(e) {
+        let img = document.createElement('img')
+        img.src = e.image;
+        img.classList.add('bookImage')
+        return img;
+    }
+    
+    function createNewBookDiv() {
+        let newBookDiv = makeDomElement('div', '', 'newBook card');
+        let newBookBtn = makeDomElement('button', '+', 'addNewBook');
+        newBookBtn.onclick = libraryPopup.openForm;
+        newBookDiv.appendChild(newBookBtn);
+        return newBookDiv;
+    }
+    
+    function makeBookInfo(e) {
+        let x = document.createElement('div');
+        let bottomDiv = makeDomElement('div', '', 'cardBottom')
+        let bookInfo = makeDomElement('div', '', 'bookInfo')
+        let read = makeDomElement('button', (e.read ? 'Read': 'Unread'), 'bookRead');
+        let author = makeDomElement('p', e.author, 'bookAuthor');
+        let pageLength = makeDomElement('p', e.pages, 'bookPages');
+        let bookImage = makeBookImageElement(e);
+        addChildrenToDiv(x, author, pageLength)
+        addChildrenToDiv(bookInfo, x, read)
+        addChildrenToDiv(bottomDiv, bookInfo, bookImage)
+        return bottomDiv;
+    }
+
+    return {
+        createNewBookDiv: createNewBookDiv,
+        makeCardElement: makeCardElement,
+    }
+})();
+
+
+let libraryPopup = (function() {
+    //cache DOM
+    const bookForm = document.getElementById('addBookForm');
+    const bookFormDiv = document.querySelector('.form-popup');
+    const mainSection = document.querySelector('.main')
+    const bottomBtn = document.querySelector('.addBook');
+    const closePopupBtn = document.getElementById('closePopup');
+
+    //add Event Listeners
+    bookForm.addEventListener('submit', submitNewBook);
+    bottomBtn.addEventListener('click', openForm);
+    closePopupBtn.addEventListener('click', closeForm);
+
+    function openForm() {
+        bookFormDiv.style.display='block';
+        mainSection.style.opacity = '0.5'
+    }
+
+    function closeForm() {
+        bookFormDiv.style.display='none';
+        document.querySelector('.main').style.opacity = null;
+    }
+
+    function clearForm(elementList) {
+        for (const e of elementList) {
+            e.value = '';
+        }
+    }
+
+    function createNewBook() {
+        let formElements = bookForm.elements;
+        let author = formElements['author'].value;
+        let title = formElements['title'].value;
+        let pages = formElements['pages'].value;
+        clearForm(formElements);
+        return [title, author, pages];
+    }
+
+    function submitNewBook(e) {
+        e.preventDefault();
+        let newBook = createNewBook(e);
+        closeForm();
+        Library.addBookToLibrary(newBook);
+    }
+
+    return {
+        openForm: openForm,
+    }
+    
+})();
+
 let Library = (function() {
     let myLibrary = [];
 
@@ -23,13 +151,22 @@ let Library = (function() {
         const harryPotter = new Book('Harry Potter', 'JK Rollings', 367);
         const test1 = new Book('test', 'test2', 235);
         const test2 = new Book('test', 'test1', 235);
-        addBookToLibrary(theHobbit);
-        addBookToLibrary(harryPotter);
-        addBookToLibrary(test1);
-        addBookToLibrary(test2);
+        myLibrary.push(theHobbit);
+        myLibrary.push(harryPotter);
+        myLibrary.push(test1);
+        myLibrary.push(test2);
+        render();
     };
 
     init();
+
+    function convertToBook(array) {
+        let title = array[0];
+        console.log(title);
+        let author = array[1];
+        let pages = array[2];
+        return new Book(title, author, pages);
+    }
 
     function render() {
         removeChildren(bookList);
@@ -42,8 +179,11 @@ let Library = (function() {
     }
 
     function addBookToLibrary(book) {
-        myLibrary.push(book);
-        // render();
+        let formattedBook = convertToBook(book);
+        console.log(formattedBook);
+        console.log(book);
+        myLibrary.push(formattedBook);
+        render();
     }    
 
     function removeChildren(parent) {
@@ -125,125 +265,3 @@ let Library = (function() {
     }
 })();
 
-let bookTemplate = (function() {
-    function addChildrenToDiv(parent) {
-        let args = Array.from(arguments);
-        args.shift();
-        args.forEach(x => parent.appendChild(x));
-    }
-    
-    function makeBookHeader(e) {
-        let cardDiv = makeDomElement('div', '','bookHeader')
-        let title = makeDomElement('h2', e.title, 'bookTitle');
-        let cancelBtn = makeDomElement('button', 'x', 'removeBook');
-        cardDiv.appendChild(title);
-        cardDiv.appendChild(cancelBtn); 
-        return cardDiv;
-    }
-    
-    function makeDomElement(tag, text = '', classID = '') {
-        let elemTag = document.createElement(tag);
-        if (text !== '') {
-            let elemText = document.createTextNode(text);
-            elemTag.appendChild(elemText)
-        }
-        if (classID !== '') {
-            let ClassArray = Array.from(classID.split(' '));
-            for (let classID of ClassArray) {
-                elemTag.classList.add(classID);
-            }
-            // elemTag.classList.add(classID);
-        }
-        return elemTag;
-    }
-    
-    function makeCardElement(e) {
-        let card = makeDomElement('div', '', 'card');
-        let bookInfo = makeBookInfo(e);
-        let bookHeader = makeBookHeader(e);
-        card.appendChild(bookHeader);
-        card.appendChild(bookInfo);
-        return card;
-    }
-    
-    function makeBookImageElement(e) {
-        let img = document.createElement('img')
-        img.src = e.image;
-        img.classList.add('bookImage')
-        return img;
-    }
-    
-    function createNewBookDiv() {
-        let newBookDiv = makeDomElement('div', '', 'newBook card');
-        let newBookBtn = makeDomElement('button', '+', 'addNewBook');
-        newBookBtn.onclick = openForm;
-        newBookDiv.appendChild(newBookBtn);
-        return newBookDiv;
-    }
-    
-    function makeBookInfo(e) {
-        let x = document.createElement('div');
-        let bottomDiv = makeDomElement('div', '', 'cardBottom')
-        let bookInfo = makeDomElement('div', '', 'bookInfo')
-        let read = makeDomElement('button', (e.read ? 'Read': 'Unread'), 'bookRead');
-        let author = makeDomElement('p', e.author, 'bookAuthor');
-        let pageLength = makeDomElement('p', e.pages, 'bookPages');
-        let bookImage = makeBookImageElement(e);
-        addChildrenToDiv(x, author, pageLength)
-        addChildrenToDiv(bookInfo, x, read)
-        addChildrenToDiv(bottomDiv, bookInfo, bookImage)
-        return bottomDiv;
-    }
-
-    return {
-        createNewBookDiv: createNewBookDiv,
-        makeCardElement: makeCardElement,
-    }
-})();
-
-
-let libraryPopup = (function() {
-    //cache DOM
-    const bookForm = document.getElementById('addBookForm');
-    const bookFormDiv = document.querySelector('.form-popup');
-    const mainSection = document.querySelector('.main')
-    const bottomBtn = document.querySelector('.addBook');
-
-    //add Event Listeners
-    bookForm.addEventListener('submit', submitNewBook);
-    bottomBtn.addEventListener('click', openForm);
-
-    function openForm() {
-        bookFormDiv.style.display='block';
-        mainSection.style.opacity = '0.5'
-    }
-
-    function closeForm() {
-        bookFormDiv.style.display='none';
-        document.querySelector('.main').style.opacity = null;
-    }
-
-    function clearForm(elementList) {
-        for (const e of elementList) {
-            e.value = '';
-        }
-    }
-
-    function createNewBook() {
-        let formElements = bookForm.elements;
-        let author = formElements['author'].value;
-        let title = formElements['title'].value;
-        let pages = formElements['pages'].value;
-        clearForm(formElements);
-        return {title, author, pages};
-    }
-
-    function submitNewBook(e) {
-        e.preventDefault();
-        let newBook = createNewBook();
-        closeForm();
-        addBookToLibrary(newBook)
-        displayLibrary(myLibrary);
-    }
-    
-})();
