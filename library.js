@@ -75,7 +75,6 @@ let bookTemplate = (function() {
     }
 })();
 
-
 let libraryPopup = (function() {
     //cache DOM
     const bookForm = document.getElementById('addBookForm');
@@ -146,7 +145,7 @@ let Library = (function() {
     let bookList = document.querySelector('#books');
 
     //Default Testing Books
-    function init() {
+    (function init() {
         const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 235);
         const harryPotter = new Book('Harry Potter', 'JK Rollings', 367);
         const test1 = new Book('test', 'test2', 235);
@@ -156,9 +155,7 @@ let Library = (function() {
         myLibrary.push(test1);
         myLibrary.push(test2);
         render();
-    };
-
-    init();
+    })();
 
     function convertToBook(array) {
         let title = array[0];
