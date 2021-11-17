@@ -130,13 +130,15 @@ let Library = (function() {
     let myLibrary = [];
 
     //Book Object Constructor
-    function Book(title, author, pages) {
-        this.title = title;
-        this.author = author;
-        this.pages = pages;
-        this.read = false;
-        this.image = 'images/addPhoto.svg';
-        this.info = function() {
+    class Book {
+        constructor(title, author, pages) {
+            this.title = title;
+            this.author = author;
+            this.pages = pages;
+            this.read = false;
+            this.image = 'images/addPhoto.svg';
+        }
+        info() {
             return `${this.title} by ${this.author} is ${pages} pages long, it ${this.read ? 'has been read' : 'has not been read'}`
         }
     }
